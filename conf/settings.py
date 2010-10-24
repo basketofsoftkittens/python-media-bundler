@@ -38,6 +38,7 @@ CSS_ROOT = ASSET_ROOT + "style/"
 def get_files(input_dir):
 	for root, dirs, files in os.walk(input_dir):
 		return tuple(files)
+
 MEDIA_BUNDLES = (
     # This should contain something like:
 
@@ -78,10 +79,19 @@ MEDIA_BUNDLES = (
 
     {"type": "png-sprite",
      "name": "browse_sprites",
-     "path": MEDIA_ROOT + "browse/sprite_source/",
+     "path": MEDIA_ROOT + "mow/",
      "url": "../images/",
      # Where the generated CSS rules go.
      "css_file": CSS_ROOT + "my-app.css",
-     "files": get_files(MEDIA_ROOT + "browse/sprite_source/")
+     "files": get_files(MEDIA_ROOT + "mow/")
 	},
 )
+
+PNG_BUNDLER_NAMES = {
+	"browse_sprites":
+    {
+        "bullet.gif":"h1",
+        "dash.png":"h2",
+        "filter_checkbox.png":"h3",
+    }    
+}

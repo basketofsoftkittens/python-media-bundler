@@ -160,6 +160,7 @@ class PngSpriteBundle(Bundle):
 
     def make_bundle(self, versioner):
         import Image  # If this fails, you need the Python Imaging Library.
+        
         boxes = [ImageBox(Image.open(path), path) for path in self.get_paths()]
         # Pick a max_width so that the sprite is squarish and a multiple of 16,
         # and so no image is too wide to fit.
@@ -201,15 +202,14 @@ class PngSpriteBundle(Bundle):
 
     def generate_css(self, packing):
         """Generate the background offset CSS rules."""
+        
         with open(self.css_file, "w") as css:
-            css.write("/* Generated classes for django-media-bundler sprites.  "
+            css.write("/* Auto Generated classes for media-bundler sprites.  "
                       "Don't edit! */\n")
-            props = {
-                "background-image": "url('%s')" % self.get_bundle_url(),
-            }
-            css.write(self.make_css(None, props))
+
             for (left, top, box) in packing:
                 props = {
+                    "background-image": "url('%s')" % self.get_bundle_url(),
                     "background-position": "%dpx %dpx" % (-left, -top),
                     "width": "%dpx" % box.width,
                     "height": "%dpx" % box.height,
@@ -219,11 +219,25 @@ class PngSpriteBundle(Bundle):
     CSS_REGEXP = re.compile(r"[^a-zA-Z\-_]")
 
     def css_class_name(self, rule_name):
+        # Here we determine if the user has any mappings set from the image file
+        # name to a predefined CSS classname
         name = self.name
-        if rule_name:
-            name += "-" + rule_name
-        name = name.replace(" ", "-").replace(".", "-")
-        return self.CSS_REGEXP.sub("", name)
+        css_name = False
+        bundle_name_mappings = False
+        
+        try:
+            css_name = bundler_settings.PNG_BUNDLER_NAMES[name][rule_name]
+        except KeyError:
+            if rule_name:
+                name += "-" + rule_name
+            name = name.replace(" ", "-").replace(".", "-")
+            css_name = self.CSS_REGEXP.sub("", name)
+
+        if not css_name:
+            raise Exception (" Rule name could neither be generated from PNG bundle name" +
+            " nor auto generated with the name: %s" % name)
+        else:
+            return css_name
 
     def make_css(self, name, props):
         # We try to format it nicely here in case the user actually looks at it.

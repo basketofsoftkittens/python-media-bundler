@@ -68,3 +68,9 @@ MEDIA_BUNDLES = (
     #     "baz.png",
     # )},
 )
+PNG_BUNDLER_NAMES = {
+    # "myapp-sprites": {
+    # "image-1": "h1",
+    # "image-2": "h2",
+    # "image-3": "p,em,div.className"
+}
