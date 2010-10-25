@@ -160,8 +160,9 @@ class PngSpriteBundle(Bundle):
 
     def make_bundle(self, versioner):
         import Image  # If this fails, you need the Python Imaging Library.
-        
-        boxes = [ImageBox(Image.open(path), path) for path in self.get_paths()]
+        # get the image paths excluding the sprite itself
+        paths = [path for path in self.get_paths() if not os.path.basename(path) == self.name + self.get_extension()]
+        boxes = [ImageBox(Image.open(path), path) for path in paths]
         # Pick a max_width so that the sprite is squarish and a multiple of 16,
         # and so no image is too wide to fit.
         total_area = sum(box.width * box.height for box in boxes)
